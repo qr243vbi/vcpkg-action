@@ -85,10 +85,12 @@ runs:
   - name: move-vcpkg
     shell: bash
     working-directory: ${{ github.workspace }}
+    env:
+      VCPKG_SUBDIR: ${{ inputs.vcpkg-subdir }}
     run: |
-      mkdir -pv ${{ inputs.vcpkg-subdir }} ||:
-      rmdir -v ${{ inputs.vcpkg-subdir }} ||:
-      mv -v vcpkg ${{ inputs.vcpkg-subdir }} ||:
+      mkdir -pv "${VCPKG_SUBDIR}" ||:
+      rmdir -v "${VCPKG_SUBDIR}" ||:
+      mv -v vcpkg "${VCPKG_SUBDIR}" ||:
   - name: bootstrap-vcpkg-win
     if: runner.os == 'Windows'
     working-directory: ${{ github.workspace }}
