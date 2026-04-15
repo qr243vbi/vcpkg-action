@@ -86,18 +86,19 @@ runs:
     shell: bash
     working-directory: ${{ github.workspace }}
     run: |
-      mkdir -p ${{ inputs.vcpkg-subdir }} ||:
-      rmdir ${{ inputs.vcpkg-subdir }} ||:
-      mv vcpkg ${{ inputs.vcpkg-subdir }} ||:
+      mkdir -pv ${{ inputs.vcpkg-subdir }} ||:
+      rmdir -v ${{ inputs.vcpkg-subdir }} ||:
+      mv -v vcpkg ${{ inputs.vcpkg-subdir }} ||:
   - name: bootstrap-vcpkg-win
     if: runner.os == 'Windows'
-    working-directory: ${{ github.workspace }}\${{ inputs.vcpkg-subdir }}
+    working-directory: ${{ github.workspace }}
     shell: powershell
     env:
-      VCPKG_ROOT: "${{ github.workspace }}/${{ inputs.vcpkg-subdir }}"
+      VCPKG_ROOT: "${{ github.workspace }}\\${{ inputs.vcpkg-subdir }}"
     run: |
       $env:VCPKG_ROOT = [System.IO.Path]::GetFullPath($env:VCPKG_ROOT)
       Write-Host "VCPKG_ROOT=$env:VCPKG_ROOT"
+      cd $env:VCPKG_ROOT
       .\bootstrap-vcpkg.bat
   - name: bootstrap-vcpkg-unix
     if: runner.os != 'Windows'
@@ -115,14 +116,15 @@ runs:
       mkdir -p '${{ runner.temp }}/vcpkg_cache'
   - name: vcpkg-dry-run-win
     if: runner.os == 'Windows' && inputs.manifest-dir == ''
-    working-directory: ${{ github.workspace }}\${{ inputs.vcpkg-subdir }}
+    working-directory: ${{ github.workspace }}
     shell: powershell
     run: |
       $env:VCPKG_ROOT = [System.IO.Path]::GetFullPath($env:VCPKG_ROOT)
+      cd $env:VCPKG_ROOT
       $vcpkg = Join-Path $env:VCPKG_ROOT "vcpkg.exe"
       & $vcpkg install --dry-run --triplet ${{ inputs.triplet }} ${{ inputs.extra-args }} ${{ inputs.pkgs }} | Tee-Object -FilePath vcpkg_dry_run.txt
     env:
-      VCPKG_ROOT: "${{ github.workspace }}/${{ inputs.vcpkg-subdir }}"
+      VCPKG_ROOT: "${{ github.workspace }}\\${{ inputs.vcpkg-subdir }}"
   - name: vcpkg-dry-run-unix
     if: runner.os != 'Windows' && inputs.manifest-dir == ''
     working-directory: ${{ github.workspace }}/${{ inputs.vcpkg-subdir }}
@@ -134,15 +136,16 @@ runs:
       VCPKG_ROOT: "${{ github.workspace }}/${{ inputs.vcpkg-subdir }}"
   - name: vcpkg-dry-run-win-manifest
     if: runner.os == 'Windows' && inputs.manifest-dir != ''
-    working-directory: ${{ github.workspace }}\${{ inputs.vcpkg-subdir }}
+    working-directory: ${{ github.workspace }}
     shell: powershell
     run: |
       $env:VCPKG_ROOT = [System.IO.Path]::GetFullPath($env:VCPKG_ROOT)
+      cd $env:VCPKG_ROOT
       $vcpkg = Join-Path $env:VCPKG_ROOT "vcpkg.exe"
       $installed = Join-Path $env:VCPKG_ROOT "installed"
       & $vcpkg install --dry-run --triplet ${{ inputs.triplet }} ${{ inputs.extra-args }} --x-manifest-root=${{ inputs.manifest-dir }} --x-install-root=$installed | Tee-Object -FilePath vcpkg_dry_run.txt
     env:
-      VCPKG_ROOT: "${{ github.workspace }}/${{ inputs.vcpkg-subdir }}"
+      VCPKG_ROOT: "${{ github.workspace }}\\${{ inputs.vcpkg-subdir }}"
   - name: vcpkg-dry-run-unix-manifest
     if: runner.os != 'Windows' && inputs.manifest-dir != ''
     working-directory: ${{ github.workspace }}/${{ inputs.vcpkg-subdir }}
@@ -167,11 +170,12 @@ runs:
   - name: build-vcpkg-win
     if: runner.os == 'Windows' && inputs.manifest-dir == ''
     shell: powershell
-    working-directory: ${{ github.workspace }}\${{ inputs.vcpkg-subdir }}
+    working-directory: ${{ github.workspace }}
     env:
-      VCPKG_ROOT: "${{ github.workspace }}/${{ inputs.vcpkg-subdir }}"
+      VCPKG_ROOT: "${{ github.workspace }}\\${{ inputs.vcpkg-subdir }}"
     run: |
       $env:VCPKG_ROOT = [System.IO.Path]::GetFullPath($env:VCPKG_ROOT)
+      cd $env:VCPKG_ROOT
       $vcpkg = Join-Path $env:VCPKG_ROOT "vcpkg.exe"
       & $vcpkg install --triplet "${{ inputs.triplet }}" ${{ inputs.extra-args }} ${{ inputs.pkgs }}
   - name: build-vcpkg-unix
@@ -186,12 +190,13 @@ runs:
   - name: build-vcpkg-win
     if: runner.os == 'Windows' && inputs.manifest-dir != ''
     shell: powershell
-    working-directory: ${{ github.workspace }}\${{ inputs.vcpkg-subdir }}
+    working-directory: ${{ github.workspace }}
     env:
-      VCPKG_ROOT: "${{ github.workspace }}/${{ inputs.vcpkg-subdir }}"
+      VCPKG_ROOT: "${{ github.workspace }}\\${{ inputs.vcpkg-subdir }}"
     run: |
       # Normalize paths (works even if they don't exist yet)
       $env:VCPKG_ROOT = [System.IO.Path]::GetFullPath($env:VCPKG_ROOT)
+      cd $env:VCPKG_ROOT
       $installRoot    = Join-Path $env:VCPKG_ROOT "installed"
       $vcpkg = Join-Path $env:VCPKG_ROOT "vcpkg.exe"
       & $vcpkg install --triplet "${{ inputs.triplet }}" ${{ inputs.extra-args }} "--x-manifest-root=${{ inputs.manifest-dir }}" "--x-install-root=$installRoot"
