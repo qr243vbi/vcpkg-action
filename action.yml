@@ -78,12 +78,15 @@ runs:
   - name: checkout-vcpkg
     uses: actions/checkout@v6
     with:
-      path: ${{ github.workspace }}/${{ inputs.vcpkg-subdir }}
+      path: ${{ github.workspace }}/vcpkg
       repository: microsoft/vcpkg
       ref: '${{ steps.determine-checkout-revision.outputs.vcpkg-revision }}'
       fetch-depth: ${{ inputs.fetch-depth }}
-    env:
-      VCPKG_ROOT: "${{ github.workspace }}/${{ inputs.vcpkg-subdir }}"
+  - name: move-vcpkg
+    shell: bash
+    working-directory: ${{ github.workspace }}
+    run: |
+      mv vcpkg ${{ inputs.vcpkg-subdir }} ||:
   - name: bootstrap-vcpkg-win
     if: runner.os == 'Windows'
     working-directory: ${{ github.workspace }}\${{ inputs.vcpkg-subdir }}
@@ -203,7 +206,7 @@ runs:
       TOOLCHAIN=`realpath '${{ github.workspace }}/${{ inputs.vcpkg-subdir }}/scripts/buildsystems/vcpkg.cmake'`
       if command -v cygpath
       then
-        TOOLCHAIN="$(cygpath -w "${VCPKG_ROOT}")"
+        TOOLCHAIN="$(cygpath -w "${TOOLCHAIN}")"
       fi
       echo "vcpkg-cmake-config=-DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN} -DVCPKG_TARGET_TRIPLET=${{ inputs.triplet }} -DVCPKG_MANIFEST_MODE=OFF" >> $GITHUB_OUTPUT
       echo "vcpkg-cache-hash=${{ hashFiles('${{ inputs.vcpkg-subdir }}/vcpkg_dry_run.txt') }}-${{ inputs.cache-key }}" >> $GITHUB_OUTPUT
