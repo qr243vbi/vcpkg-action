@@ -46,8 +46,6 @@ jobs:
         config:
         - os: ubuntu-22.04
           vcpkg_triplet: x64-linux-release
-        - os: macos-13
-          vcpkg_triplet: x64-osx-release
         - os: windows-2022
           vcpkg_triplet: x64-windows-release
     steps:
@@ -78,8 +76,6 @@ jobs:
         config:
         - os: ubuntu-22.04
           vcpkg_triplet: x64-linux-release
-        - os: macos-13
-          vcpkg_triplet: x64-osx-release
         - os: windows-2022
           vcpkg_triplet: x64-windows-release
     steps:
