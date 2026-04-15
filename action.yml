@@ -200,12 +200,12 @@ runs:
     shell: bash
     id: vcpkg-cmake-config
     run: |
-      VCPKG_ROOT=`realpath '${{ github.workspace }}/${{ inputs.vcpkg-subdir }}/scripts/buildsystems/vcpkg.cmake'`
-      if [[ command -v cygpath ]]
+      TOOLCHAIN=`realpath '${{ github.workspace }}/${{ inputs.vcpkg-subdir }}/scripts/buildsystems/vcpkg.cmake'`
+      if command -v cygpath
       then
-        VCPKG_ROOT="$(cygpath -w "${VCPKG_ROOT}")"
+        TOOLCHAIN="$(cygpath -w "${VCPKG_ROOT}")"
       fi
-      echo "vcpkg-cmake-config=-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT} -DVCPKG_TARGET_TRIPLET=${{ inputs.triplet }} -DVCPKG_MANIFEST_MODE=OFF" >> $GITHUB_OUTPUT
+      echo "vcpkg-cmake-config=-DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN} -DVCPKG_TARGET_TRIPLET=${{ inputs.triplet }} -DVCPKG_MANIFEST_MODE=OFF" >> $GITHUB_OUTPUT
       echo "vcpkg-cache-hash=${{ hashFiles('${{ inputs.vcpkg-subdir }}/vcpkg_dry_run.txt') }}-${{ inputs.cache-key }}" >> $GITHUB_OUTPUT
   - uses: actions/upload-artifact@v7
     id: upload-vcpkg-logs
