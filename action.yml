@@ -201,7 +201,7 @@ runs:
     id: vcpkg-cmake-config
     run: |
       VCPKG_ROOT=`realpath '${{ github.workspace }}/${{ inputs.vcpkg-subdir }}/scripts/buildsystems/vcpkg.cmake'`
-      if [[ ${{ runner.os }} != 'Windows' ]];
+      if [[ command -v cygpath ]]
       then
         VCPKG_ROOT="$(cygpath -w "${VCPKG_ROOT}")"
       fi
