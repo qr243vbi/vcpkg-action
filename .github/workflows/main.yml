@@ -29,6 +29,7 @@ jobs:
           revision: master
           token: ${{ github.token }}
           collect-logs: 'on-failure'
+          vcpkg-subdir: '../../iblis_the_master'
       - name: tree
         if: runner.os == 'Windows'
         shell: cmd
@@ -59,6 +60,7 @@ jobs:
           cache-key: ${{ matrix.config.os }}-latest-vcpkg-release
           token: ${{ github.token }}
           collect-logs: 'on-failure'
+          vcpkg-subdir: '../../iblis_the_master'
       - name: tree
         if: runner.os == 'Windows'
         shell: cmd
@@ -89,6 +91,7 @@ jobs:
           token: ${{ github.token }}
           manifest-dir: ${{ github.workspace }}/.github/manifest
           collect-logs: 'on-failure'
+          vcpkg-subdir: '../../iblis_the_master'
       - name: cmake configure
         run: >
           cmake ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -S ${{ github.workspace }}/.github/cmake_test -B cmake_build
