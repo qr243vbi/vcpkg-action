@@ -65,7 +65,7 @@ runs:
       VCPKG_ROOT: "${{ github.workspace }}/${{ inputs.vcpkg-subdir }}"
     with:
       latest: true
-      repo: microsoft/vcpkg
+      repo: ${{ inputs.repository }}
       prerelease: false
       draft: false    
   - name: Determine checkout tag
