@@ -22,6 +22,10 @@ inputs:
     description: "vcpkg revision to checkout."
     required: false
     default: ''
+  repository:
+    description: "vcpkg repository to checkout."
+    required: false
+    default: 'microsoft/vcpkg'
   token:
     description: "GitHub token to authenticate API requests. Recommended to use  github.token "
     required: false
@@ -79,7 +83,7 @@ runs:
     uses: actions/checkout@v6
     with:
       path: ${{ github.workspace }}/vcpkg
-      repository: microsoft/vcpkg
+      repository: ${{ inputs.repository }}
       ref: '${{ steps.determine-checkout-revision.outputs.vcpkg-revision }}'
       fetch-depth: ${{ inputs.fetch-depth }}
   - name: move-vcpkg
